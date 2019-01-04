@@ -1,7 +1,7 @@
 <template>
   <div class='log-container'>
     <ul>
-      <li v-for='(log, i) in logs.slice().reverse()' :key='i'>
+      <li v-for='(log, i) in logs.slice().reverse().slice(0, 20)' :key='i'>
         <span :class='log.player'>{{ readablePlayer(log.player) }}</span> {{ log.text }}
       </li>
     </ul>
@@ -35,7 +35,8 @@ export default {
 
 ul {
   list-style: none;
-  width: 1205px;
+  /* width: 1205px; */
+  width: 1020px;
   text-align: left;
   line-height: 2em;
   padding: 15px;

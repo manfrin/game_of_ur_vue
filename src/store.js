@@ -11,6 +11,10 @@ export default new Vuex.Store({
       player1: [0, 0, 0, 0, 0, 0, 0],
       player2: [0, 0, 0, 0, 0, 0, 0],
     },
+    finishedPips: {
+      player1: 0,
+      player2: 0
+    },
     canRoll: true,
     canPlay: false,
     die: [0, 0, 0, 0],
@@ -40,6 +44,7 @@ export default new Vuex.Store({
     nextTurn (state) {
       state.canPlay = false
       state.canRoll = true
+      state.hoveringOver = {}
     },
     log (state, logEntry) {
       state.logs.push(logEntry)
@@ -50,6 +55,13 @@ export default new Vuex.Store({
     movePiece (state, {player, idx, address}) {
       Vue.set(state.pips[player], idx, address)
       state.validMoves = {}
+      state.hoveringOver = {}
+    },
+    winPiece (state, {player, idx}) {
+      Vue.delete(state.pips[player], idx)
+      state.finishedPips[player] += 1
+      state.validMoves = {}
+      state.hoveringOver = {}
     },
     checkValidMoves (state) {
       var valid = {}
@@ -75,7 +87,7 @@ export default new Vuex.Store({
         }))
       }
       state.validMoves = valid
-      state.hasValidMoves = valid.length > 0
+      state.hasValidMoves = Object.keys(valid).length > 0
     }
   },
   actions: {
@@ -114,18 +126,42 @@ export default new Vuex.Store({
       var opponent = state.currentPlayer === 'player1' ? 'player2' : 'player1'
       var pipLoc = +address - moves
       var pipIdx = state.pips[player].indexOf(pipLoc)
-      var oppPipIdx = state.pips[opponent].indexOf(+address)
-      var onReroll = state.board[+address].type === 'reroll'
-      commit('log', {player: player, text: `moved a piece from ${address - moves} to ${address}.`})
-      if (oppPipIdx >= 0 && !state.board[+address].safe) {
-        commit('bumpPiece', {idx: oppPipIdx, player: opponent})
-        commit('log', {player: player, text: `took opponents piece.`})
+
+      if (+address === 15) {
+        commit('log', {player: state.currentPlayer, text: 'got a piece to the end!'})
+        commit('winPiece', {player, idx: pipIdx})
+      } else {
+        var oppPipIdx = state.pips[opponent].indexOf(+address)
+        var onReroll = state.board[+address].type === 'reroll'
+        commit('log', {player: player, text: `moved a piece from ${address - moves} to ${address}.`})
+        if (oppPipIdx >= 0 && !state.board[+address].safe) {
+          commit('bumpPiece', {idx: oppPipIdx, player: opponent})
+          commit('log', {player: player, text: `took opponents piece.`})
+        }
+        commit('movePiece', {player, idx: pipIdx, address})
       }
-      commit('movePiece', {player, idx: pipIdx, address})
       if (!onReroll) {
         commit('changePlayer')
       }
       commit('nextTurn')
+    }
+  },
+  getters: {
+    pipCompletion: state => {
+      var player1Finished = +state.finishedPips.player1
+      var player1Unfinished = +state.pips.player1.length
+      var player2Finished = +state.finishedPips.player2
+      var player2Unfinished = +state.pips.player2.length
+      return {
+        player1: {
+          finished: player1Finished,
+          unfinished: player1Unfinished
+        },
+        player2: {
+          finished: player2Finished,
+          unfinished: player2Unfinished
+        }
+      }
     }
   }
 })

@@ -1,7 +1,6 @@
 <template>
-  <div v-if='!canRoll'>
-    <p>Moves: {{ moves }} </p>
-    <div class='dice' v-for="(dice, index) in die" :key='index' :class='{rolledPip: dice > 0}'>
+  <div>
+    <div class='dice' v-for="(dice, index) in die" :key='index' :class='{rolledPip: dice > 0, disabled: canRoll}'>
       {{ dice }} 
     </div>
   </div>
@@ -39,5 +38,11 @@ export default {
   border: 3px solid #00ff33;
   background-color: #333;
   color: #ccc;
+}
+
+.dice.disabled {
+  border: 3px solid rgb(83, 83, 83);
+  background-color: #fff;
+  color: #fff;
 }
 </style>

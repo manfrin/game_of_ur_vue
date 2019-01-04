@@ -1,21 +1,22 @@
 <template>
   <div>
     <div class='board-container'>
-      <h3 class='player-2-name'>Player 2</h3>
+      <h3 class='player-2-name'><PipDisplay playerSide='player2' /> Player 2</h3>
       <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player2' :validMoves='validMoves'/>
       <TileRow :pips='pips' :layout='boardLayout.middle' playerSide='middle' :validMoves='validMoves'/>
       <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player1' :validMoves='validMoves'/>
-      <h3 class='player-1-name'>Player 1</h3>
+      <h3 class='player-1-name'>Player 1 <PipDisplay playerSide='player1' /></h3>
     </div>
   </div>
 </template>
 
 <script>
 import TileRow from "./TileRow.vue"
+import PipDisplay from "./PipDisplay.vue"
 
 export default {
   name: 'Board',
-  components: {TileRow},
+  components: {TileRow, PipDisplay},
   props: {
     validMoves: Object,
   },
@@ -51,7 +52,7 @@ export default {
 .board-container {
   display: inline-block;
   background: #333;
-  transform: rotateX(35deg);
+  /* transform: rotateX(35deg); */
   padding: 6px;
 }
 .player-1-name {

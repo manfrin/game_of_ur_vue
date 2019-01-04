@@ -1,6 +1,6 @@
 <template>
   <div class='board-space' v-bind:class='classObject' @mouseover='isHovering' @click='move'>
-    <p v-if='hasPip' v-bind:class='pip'>{{ pipName }}</p>
+    <p v-if='hasPip' v-bind:class='pip'></p>
   </div>
 </template>
 
@@ -12,6 +12,10 @@ export default {
     playerSide: String
   },
   computed: {
+    checkHover() {
+      return this.$store.state.canPlay &&
+        (this.$store.getters.opponent !== this.playerSide)
+    },
     canMoveTo () {
       return this.onside && this.validTargets.includes(this.address)
     },
@@ -122,20 +126,23 @@ export default {
       }
     },
     isHovering() {
-      this.$store.dispatch('hover', {address: this.address, playerSide: this.playerSide, canMoveTo: this.canMoveTo, canMoveFrom: this.canMoveFrom})
+      if (this.checkHover) {
+        this.$store.dispatch('hover', {address: this.address, playerSide: this.playerSide, canMoveTo: this.canMoveTo, canMoveFrom: this.canMoveFrom})
+      }
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .board-space {
   width: 110px;
   height: 110px;
-  display: inline-block;
+  display: inline-flex;
   font-size: .8em;
   vertical-align: middle;
   margin: 10px;
+  align-items: center;
 }
 
 .start {
@@ -189,8 +196,13 @@ export default {
 p {
   padding: 10px;
   border-radius: 20px;
-  margin: 10px;
-  max-width: 80px;
+  margin: 0 auto;
+  height: 20px;
+  width: 20px;
+}
+
+.hovering p {
+  border: 3px solid #fff;
 }
 
 p.player1 {

@@ -1,5 +1,5 @@
 <template>
-  <button v-if='canRoll' @click='clickRoll'>Roll</button>
+  <button :disabled='!canRoll' @click='clickRoll'>Roll</button>
 </template>
 
 <script>
@@ -21,7 +21,9 @@ export default {
 <style scoped>
 button {
   line-height: 0;
-  padding: 50px;
-  font-size: 3em;
+  padding: 20px;
+  font-size: 2em;
+  vertical-align: middle;
+  margin: 0 0px 0 10px;
 }
 </style>
