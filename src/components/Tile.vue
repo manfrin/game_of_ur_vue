@@ -1,5 +1,5 @@
 <template>
-  <div class='board-space' v-bind:class='classObject' @mouseover='isHovering' @click='move'>
+  <div class='board-space' v-bind:class='classObject' @mouseover='isHovering' @mouseout='notHovering' @click='move'>
     <p v-if='hasPip' v-bind:class='pip'></p>
   </div>
 </template>
@@ -15,6 +15,9 @@ export default {
     checkHover() {
       return this.$store.state.canPlay &&
         (this.$store.getters.opponent !== this.playerSide)
+    },
+    activeHover() {
+      return Object.keys(this.$store.state.hoveringOver).length > 0
     },
     canMoveTo () {
       return this.onside && this.validTargets.includes(this.address)
@@ -41,8 +44,15 @@ export default {
         hovering: this.hovering,
         inBetween: this.inBetween,
         isTargetMove: this.canMoveTo,
-        isSourceMove: this.canMoveFrom
+        isSourceMove: this.canMoveFrom,
+        dim: this.shouldDim
       }
+    },
+    shouldDim() {
+      return this.checkHover && this.activeHover && this.notInvolved;
+    },
+    notInvolved() {
+      return !(this.inBetween || this.hovering)
     },
     inBetween() {
       var {address, canMoveTo, canMoveFrom} = this.$store.state.hoveringOver
@@ -126,8 +136,13 @@ export default {
       }
     },
     isHovering() {
-      if (this.checkHover) {
+      if (this.checkHover && this.onside) {
         this.$store.dispatch('hover', {address: this.address, playerSide: this.playerSide, canMoveTo: this.canMoveTo, canMoveFrom: this.canMoveFrom})
+      }
+    },
+    notHovering() {
+      if (this.checkHover) {
+        this.$store.dispatch('notHovering')
       }
     }
   }
@@ -143,6 +158,7 @@ export default {
   vertical-align: middle;
   margin: 10px;
   align-items: center;
+  transition: 1s;
 }
 
 .start {
@@ -187,10 +203,14 @@ export default {
   background-color: #00ff4c !important;
 }
 
-.board-space.inBetween:not(:first-child) {
+.board-space.inBetween:not(:first-child):not(:last-child) {
   background-color: #00ff4c !important;
   width: 150px;
   margin: 0 -10px 0 -10px;
+}
+
+.board-space.dim {
+  opacity: .5;
 }
 
 p {

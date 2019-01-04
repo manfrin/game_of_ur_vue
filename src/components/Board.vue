@@ -48,7 +48,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .board-container {
   display: inline-block;
   background: #333;
@@ -64,4 +64,5 @@ export default {
   text-align: right;
   margin-right: 20px;
 }
+
 </style>

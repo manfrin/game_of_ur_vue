@@ -7,14 +7,21 @@
         <h2>Current Player: <span :class='currentPlayer'>{{ currentPlayerReadable }}</span></h2>
       </div>
       <div class='header-half right'>
-        <div class='die'>
-          <Die />
+        <div class='moves'>
+          <div class='die'>
+            <Die />
+          </div>
+          <Controls />
         </div>
-        <Controls />
+        <h2>Made by Mike Manfrin / <a href="https://twitter.com/manfrin">@manfrin</a> / <a href="https://github.com/manfrin">github.com/manfrin</a></h2>
+        <h3>Source Code available on the <a href="https://github.com/manfrin/game_of_ur_vue">repo</a>. I also made a <a href="https://game.manfrincdn.com">Mahjong-ish hex puzzle game</a>.</h3>
       </div>
     </header>
     <Board class='board' />
-    <Logs />
+    <div class='bottom-container'>
+      <Logs />
+      <instructions />
+    </div>
   </div>
 </template>
 
@@ -23,6 +30,7 @@ import Board from "./Board.vue"
 import Controls from "./Controls.vue"
 import Die from "./Die.vue"
 import Logs from "./Logs.vue"
+import Instructions from "./Instructions.vue"
 
 export default {
   name: 'Game',
@@ -30,7 +38,8 @@ export default {
     Board, 
     Controls, 
     Die,
-    Logs
+    Logs,
+    Instructions
   },
   methods: {
     nextTurn(nextPlayer = true) {
@@ -87,7 +96,7 @@ export default {
 
 header {
   width: 1050px;
-  display: inline-block;
+  display: inline-flex;
   text-align: left;
 }
 
@@ -98,6 +107,17 @@ h1 {
 
 p {
   margin: 0;
+}
+
+h2 {
+  margin: 30px 0 10px 0;
+  padding: 0;
+  font-size: 1em;
+}
+
+h3 {
+  font-size: .8em;
+  color: #fff;
 }
 
 a {
@@ -142,6 +162,19 @@ span.player2 {
 
 .die {
   display: inline-block;
+}
+
+.bottom-container {
+  display: inline-flex;
+  background: rgb(51,51,51);
+  background: linear-gradient(180deg, rgba(51,51,51,1) 0%, rgba(255,255,255,0) 100%); 
+  margin-top: -15px;
+  border-radius: 5px;
+  width: 1000px;
+  height: 350px;
+  justify-content: space-between;
+  padding: 25px;
+  padding-top: 0px;
 }
 
 </style>

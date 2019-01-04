@@ -26,11 +26,11 @@ export default {
 
 <style>
 .log-container {
-  display: inline-block;
-  background: rgb(51,51,51);
-  background: linear-gradient(180deg, rgba(51,51,51,1) 0%, rgba(255,255,255,0) 100%); 
-  margin-top: -15px;
-  border-radius: 5px;
+  width: 25%;
+  height: 350px;
+  padding: 0;
+  padding-top: 40px;
+  margin: 0;
 }
 
 ul {

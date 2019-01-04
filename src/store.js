@@ -32,6 +32,9 @@ export default new Vuex.Store({
     hover (state, tile) {
       state.hoveringOver = tile
     },
+    notHovering (state) {
+      state.hoveringOver = {}
+    },
     changePlayer (state) {
       state.currentPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
     },
@@ -96,6 +99,9 @@ export default new Vuex.Store({
     },
     hover ({commit}, tile) {
       commit('hover', tile)
+    },
+    notHovering ({commit}) {
+      commit('notHovering')
     },
     changePlayer ({commit}) {
       commit('changePlayer')
