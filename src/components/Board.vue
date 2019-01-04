@@ -2,9 +2,9 @@
   <div>
     <div class='board-container'>
       <h3 class='player-2-name'>Player 2</h3>
-      <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player2' :validMoves='validMoves' :board='board' :currentPlayer='currentPlayer' @makeMove='makeMove' />
-      <TileRow :pips='pips' :layout='boardLayout.middle' playerSide='middle' :validMoves='validMoves' :board='board' :currentPlayer='currentPlayer' @makeMove='makeMove' />
-      <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player1' :validMoves='validMoves' :board='board' :currentPlayer='currentPlayer' @makeMove='makeMove' />
+      <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player2' :validMoves='validMoves'/>
+      <TileRow :pips='pips' :layout='boardLayout.middle' playerSide='middle' :validMoves='validMoves'/>
+      <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player1' :validMoves='validMoves'/>
       <h3 class='player-1-name'>Player 1</h3>
     </div>
   </div>
@@ -17,25 +17,26 @@ export default {
   name: 'Board',
   components: {TileRow},
   props: {
-    board: Object,
     validMoves: Object,
-    pips: Object,
-    currentPlayer: String
   },
   data() {
     return {
       boardLayout: {
         player: [4, 3, 2, 1, 0, 15, 14, 13],
         middle: [5, 6, 7, 8, 9, 10, 11, 12]
-      }
+      },
+      board: this.$store.state.board
     }
   },
   methods: {
-    makeMove(address, toOrFrom) {
-      this.$emit('makeMove', address, toOrFrom)
-    }
   },
   computed: {
+    pips() {
+      return this.$store.state.pips
+    },
+    currentPlayer() { 
+      return this.$store.state.currentPlayer 
+    },
     moveFromKeys: function () {
       return Object.keys(this.validMoves[this.currentPlayer])
     },
