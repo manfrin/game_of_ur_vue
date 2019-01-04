@@ -43,12 +43,14 @@ ul {
   margin: 0;
   height: 320px;
   overflow: hidden;
+  font-size: .9em;
 }
 
 span {
-  padding: 5px;
-  margin: 3px;
+  padding: 3px;
+  margin: 0px;
   border-radius: 5px;
+  font-size: .8em;
 }
 
 span.player1 {

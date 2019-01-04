@@ -25,5 +25,6 @@ button {
   font-size: 2em;
   vertical-align: middle;
   margin: 0 0px 0 10px;
+  height: 55px;
 }
 </style>

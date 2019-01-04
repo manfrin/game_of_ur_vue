@@ -1,12 +1,14 @@
 <template>
   <div>
     <header>
-      <div class='header-half'>
-        <h1>Royal Game of Ur</h1>
-        <p>(<a href="https://en.wikipedia.org/wiki/Royal_Game_of_Ur" target="_blank">Wikipedia: Royal Game of Ur</a>)</p>
+      <div class='header-left'>
+        <div>
+          <h1>Royal Game of Ur</h1>
+          <p>(Wikipedia: <a href="https://en.wikipedia.org/wiki/Royal_Game_of_Ur" target="_blank">Royal Game of Ur</a>)</p>
+        </div>
         <h2>Current Player: <span :class='currentPlayer'>{{ currentPlayerReadable }}</span></h2>
       </div>
-      <div class='header-half right'>
+      <div class='header-right right'>
         <div class='moves'>
           <div class='die'>
             <Die />
@@ -95,9 +97,10 @@ export default {
 <style>
 
 header {
-  width: 1050px;
+  width: 900px;
   display: inline-flex;
   text-align: left;
+  justify-content: space-between
 }
 
 h1 {
@@ -134,9 +137,17 @@ a:hover {
   color: #ff0000;
 }
 
-.header-half {
+.header-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+
+.header-right {
   display: inline-block;
-  width: 50%;
+  width: 60%;
   margin: 0;
   padding: 0;
 }
@@ -167,10 +178,10 @@ span.player2 {
 .bottom-container {
   display: inline-flex;
   background: rgb(51,51,51);
-  background: linear-gradient(180deg, rgba(51,51,51,1) 0%, rgba(255,255,255,0) 100%); 
-  margin-top: -15px;
+  background: linear-gradient(180deg, rgba(88, 82, 52, 0.273) 0%, rgba(255,255,255,0) 100%); 
+  margin-top: 0px;
   border-radius: 5px;
-  width: 1000px;
+  width: 858px;
   height: 350px;
   justify-content: space-between;
   padding: 25px;

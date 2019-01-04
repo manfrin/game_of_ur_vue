@@ -49,7 +49,7 @@ export default {
       }
     },
     shouldDim() {
-      return this.checkHover && this.activeHover && this.notInvolved;
+      return this.checkHover && !this.onside
     },
     notInvolved() {
       return !(this.inBetween || this.hovering)
@@ -156,30 +156,30 @@ export default {
   display: inline-flex;
   font-size: .8em;
   vertical-align: middle;
-  margin: 10px;
+  margin: 1px;
   align-items: center;
   transition: 1s;
 }
 
 .start {
-  background-color: #333;
+  background-color: rgba(88, 82, 52, 0);
   color: #ccc;
 }
 
 .blank {
-  background-color: #ccc;
+  background-color: rgba(165, 145, 58, 0.459);
 }
 
 .reroll {
-  background-color: #55ccff;
+  background-color: #d10c06d5;
 }
 
 .castle {
-  background-color: #ccff11
+  background-color: #2b271ccc
 }
 
 .end {
-  background-color: #333;
+  background-color: rgba(88, 82, 52, 0);
 }
 
 .board-space.isTargetMove {
@@ -203,14 +203,30 @@ export default {
   background-color: #00ff4c !important;
 }
 
+.board-space.one-off {
+  transition: .75s;
+}
+
+.board-space.two-off {
+  transition: 1.5s;
+}
+
+.board-space.three-off {
+  transition: 2.25s;
+}
+
+.board-space.four-off {
+  transition: 3s;
+}
+/* 
 .board-space.inBetween:not(:first-child):not(:last-child) {
   background-color: #00ff4c !important;
   width: 150px;
   margin: 0 -10px 0 -10px;
-}
+} */
 
 .board-space.dim {
-  opacity: .5;
+  opacity: .2;
 }
 
 p {

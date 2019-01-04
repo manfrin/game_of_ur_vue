@@ -51,7 +51,7 @@ export default {
 <style>
 .board-container {
   display: inline-block;
-  background: #333;
+  background: rgba(88, 82, 52, 0.273);
   /* transform: rotateX(35deg); */
   padding: 6px;
 }
