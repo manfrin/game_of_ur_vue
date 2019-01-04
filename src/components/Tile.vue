@@ -12,6 +12,38 @@ export default {
     playerSide: String
   },
   computed: {
+    distanceFromHoverSource() {
+      if (this.activeHover && this.checkHover) {
+        var moves = this.$store.state.moves
+        var {address, canMoveFrom} = this.$store.state.hoveringOver
+        var start = (canMoveFrom ? +address : (+address - moves))
+        return this.address - start
+      } else {
+        return -1
+      }
+    },
+    hoverDistanceClass() {
+      var distClass
+
+      switch(this.distanceFromHoverSource) {
+        case 1:
+          distClass = 'one-off'
+          break
+        case 2:
+          distClass = 'two-off'
+          break
+        case 3:
+          distClass = 'three-off'
+          break
+        case 4:
+          distClass = 'four-off'
+          break
+        default:
+          distClass = ''
+      }
+
+      return distClass
+    },
     checkHover() {
       return this.$store.state.canPlay &&
         (this.$store.getters.opponent !== this.playerSide)
@@ -38,9 +70,11 @@ export default {
     classObject() {
       var type = this.type
       var side = this.playerSide
+      var hoverDistanceClass = this.hoverDistanceClass
       return {
         [type]: true,
         [side]: true,
+        [hoverDistanceClass]: true,
         hovering: this.hovering,
         inBetween: this.inBetween,
         isTargetMove: this.canMoveTo,
@@ -196,27 +230,27 @@ export default {
 
 .board-space.hovering {
   /* border: 5px dashed #239289 !important; */
-  background-color: #00ff4c !important;
+  background-color: #fffb10c9 !important;
 }
 
 .board-space.inBetween {
-  background-color: #00ff4c !important;
+  background-color: #fffb10c9 !important;
 }
 
 .board-space.one-off {
-  transition: .75s;
+  transition: 1.75s !important;
 }
 
 .board-space.two-off {
-  transition: 1.5s;
+  transition: 3.5s !important;
 }
 
 .board-space.three-off {
-  transition: 2.25s;
+  transition: 5.25s !important;
 }
 
 .board-space.four-off {
-  transition: 3s;
+  transition: 7s !important;
 }
 /* 
 .board-space.inBetween:not(:first-child):not(:last-child) {
