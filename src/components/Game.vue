@@ -1,10 +1,15 @@
 <template>
   <div>
     <header>
-      <h1>Royal Game of Ur</h1>
-      <h2>Current Player: <span :class='currentPlayer'>{{ currentPlayerReadable }}</span></h2>
-      <div class='die'>
-        <Die />
+      <div class='header-half'>
+        <h1>Royal Game of Ur</h1>
+        <p>(<a href="https://en.wikipedia.org/wiki/Royal_Game_of_Ur" target="_blank">Wikipedia: Royal Game of Ur</a>)</p>
+        <h2>Current Player: <span :class='currentPlayer'>{{ currentPlayerReadable }}</span></h2>
+      </div>
+      <div class='header-half right'>
+        <div class='die'>
+          <Die />
+        </div>
         <Controls />
       </div>
     </header>
@@ -79,14 +84,45 @@ export default {
 </script>
 
 <style>
-.board {
-  perspective: 1000px;
-}
 
 header {
-  width: 868px;
+  width: 1050px;
   display: inline-block;
   text-align: left;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: #fff;
+}
+
+
+a:visited {
+  color: #fff;
+}
+
+
+a:hover {
+  color: #ff0000;
+}
+
+.header-half {
+  display: inline-block;
+  width: 50%;
+  margin: 0;
+  padding: 0;
+}
+
+.right {
+  text-align: right;
 }
 
 span {
@@ -105,7 +141,7 @@ span.player2 {
 }
 
 .die {
-  height: 120px;
+  display: inline-block;
 }
 
 </style>
