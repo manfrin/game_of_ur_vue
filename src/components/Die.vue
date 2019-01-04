@@ -10,10 +10,16 @@
 <script>
 export default {
   name: 'Die',
-  props: {
-    die: Array,
-    moves: Number,
-    canRoll: Boolean
+  computed: {
+    die() {
+      return this.$store.state.die
+    },
+    canRoll() {
+      return this.$store.state.canRoll
+    },
+    moves() {
+      return this.$store.state.moves
+    }
   }
 }
 </script>

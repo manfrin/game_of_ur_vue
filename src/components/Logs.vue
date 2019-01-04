@@ -11,12 +11,14 @@
 <script>
 export default {
   name: 'Logs',
-  props: {
-    logs: Array
-  },
   methods: {
-    readablePlayer() {
-      return this.player === 'player1' ? 'Player 1' : 'Player 2'
+    readablePlayer(player) {
+      return player === 'player1' ? 'Player 1' : 'Player 2'
+    }
+  },
+  computed: {
+    logs () {
+      return this.$store.state.logs
     }
   }
 }
@@ -33,23 +35,13 @@ export default {
 
 ul {
   list-style: none;
-  width: 1080px;
+  width: 1205px;
   text-align: left;
   line-height: 2em;
   padding: 15px;
   margin: 0;
   height: 320px;
   overflow: hidden;
-}
-
-ul:after {
-  content:'';
-  width:100%;
-  height:250px;    
-  position: absolute;
-  left:0;
-  bottom:0;
-  background:linear-gradient(transparent 250px, white);
 }
 
 span {

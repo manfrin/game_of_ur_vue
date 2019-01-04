@@ -5,12 +5,14 @@
 <script>
 export default {
   name: 'Controls',
-  props: {
-    canRoll: Boolean
+  computed: {
+    canRoll() {
+      return this.$store.state.canRoll
+    }
   },
   methods: {
     clickRoll() {
-      this.$emit('click-roll')
+      this.$store.dispatch('rollDice')
     }
   }
 }
