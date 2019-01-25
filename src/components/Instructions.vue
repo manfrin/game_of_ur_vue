@@ -20,7 +20,6 @@ export default {
   height: 350px;
   padding: 0;
   margin: 0;
-  margin-right: 30px;
 }
 
 h2 {

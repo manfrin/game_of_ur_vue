@@ -8,7 +8,8 @@ import EventBus from './event-bus'
 import getValidMoves from './services/get-valid-moves'
 import {
   checkForWin,
-  otherPlayer
+  otherPlayer,
+  addressToRead
 } from './helpers'
 
 const PIPS_IN_GAME = 7
@@ -144,7 +145,7 @@ export default new Vuex.Store({
     movePiece({commit, state, dispatch}, address) {
       var moves = state.moves
       var player = state.currentPlayer
-      var opponent = state.currentPlayer === 'player1' ? 'player2' : 'player1'
+      var opponent = otherPlayer(state.currentPlayer)
       var pipLoc = +address - moves
       var pipIdx = state.pips[player].indexOf(pipLoc)
 
@@ -154,7 +155,7 @@ export default new Vuex.Store({
       } else {
         var oppPipIdx = state.pips[opponent].indexOf(+address)
         var onReroll = state.board[+address].type === 'reroll'
-        commit('log', {player: player, text: `moved a piece from ${address - moves} to ${address}.`})
+        commit('log', {player: player, text: `moved a piece from ${addressToRead(address - moves)} to ${addressToRead(address)}.`})
         if (oppPipIdx >= 0 && !state.board[+address].safe) {
           commit('bumpPiece', {idx: oppPipIdx, player: opponent})
           commit('log', {player: player, text: `took opponents piece.`})
