@@ -16,10 +16,14 @@
           <Controls />
         </div>
         <h2>Made by Mike Manfrin / <a href="https://twitter.com/manfrin">@manfrin</a> / <a href="https://github.com/manfrin">github.com/manfrin</a></h2>
-        <h3>Source Code available on the <a href="https://github.com/manfrin/game_of_ur_vue">repo</a>. I also made a <a href="https://game.manfrincdn.com">Mahjong-ish hex puzzle game</a>.</h3>
+        <h4>Source Code available on the <a href="https://github.com/manfrin/game_of_ur_vue">repo</a>. I also made a <a href="https://game.manfrincdn.com">Mahjong-ish hex puzzle game</a>.</h4>
       </div>
     </header>
-    <Board class='board' />
+    <Board class='board' v-if="!gameOver" />
+    <div v-if="gameOver">
+      <h1>{{ winner }} has won!</h1>
+      <button @click='newGame'>New Game</button>
+    </div>
     <div class='bottom-container'>
       <Logs />
       <instructions />
@@ -35,6 +39,7 @@ import Logs from "./Logs.vue"
 import Instructions from "./Instructions.vue"
 
 import { mapState } from "vuex"
+import EventBus from '../event-bus'
 
 export default {
   name: 'Game',
@@ -48,6 +53,9 @@ export default {
   methods: {
     nextTurn(nextPlayer = true) {
       this.$store.dispatch('nextTurn', nextPlayer)
+    },
+    newGame() {
+      this.$store.dispatch('newGame')
     }
   },
   watch: {
@@ -55,6 +63,12 @@ export default {
       if (!this.hasValidMoves) {
         this.$store.dispatch('log', {player: this.currentPlayer, text: `has no valid moves, skipping turn.`})
         this.nextTurn(true)
+      }
+    },
+    finishedPips(val) {
+      if (Object.values(val).includes(this.pipsToWin)) {
+        this.$store.dispatch('gameOver')
+        EventBus.$emit('gameOver')
       }
     }
   },
@@ -69,7 +83,7 @@ export default {
       return this.currentPlayer === 'player1' ? 'Player 1' : 'Player 2'
     },
     ...mapState([
-      'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves'
+      'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves', 'finishedPips', 'pipsToWin', 'gameOver', 'winner', 'playing'
     ])
   }
 }
@@ -99,7 +113,7 @@ h2 {
   font-size: 1em;
 }
 
-h3 {
+h4 {
   font-size: .8em;
   color: #fff;
 }

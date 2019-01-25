@@ -5,17 +5,32 @@ Vue.use(Vuex)
 
 import board from './data/board.js'
 import EventBus from './event-bus'
+import getValidMoves from './services/get-valid-moves'
+import {
+  checkForWin,
+  otherPlayer
+} from './helpers'
 
-export default new Vuex.Store({
-  state: {
+const PIPS_IN_GAME = 7
+
+function initialState() {
+  return {
     pips: {
-      player1: [0, 0, 0, 0, 0, 0, 0],
-      player2: [0, 0, 0, 0, 0, 0, 0],
+      player1: new Array(PIPS_IN_GAME).fill(0),
+      player2: new Array(PIPS_IN_GAME).fill(0),
+    },
+    displayNames: {
+      player1: 'Player 1',
+      player2: 'Player 2'
     },
     finishedPips: {
       player1: 0,
       player2: 0
     },
+    pipsToWin: PIPS_IN_GAME,
+    gameOver: false,
+    playing: true,
+    winner: null,
     canRoll: true,
     canPlay: false,
     die: [0, 0, 0, 0],
@@ -24,10 +39,20 @@ export default new Vuex.Store({
     currentPlayer: 'player1',
     board,
     logs: []
+  }
+}
+
+export default new Vuex.Store({
+  state: {
+    wins: {
+      player1: 0,
+      player2: 0
+    },
+    ...initialState()
   },
   mutations: {
     changePlayer (state) {
-      state.currentPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
+      state.currentPlayer = otherPlayer(state.currentPlayer)
     },
     rollDice (state, {die, moves}) {
       state.die = die
@@ -58,6 +83,22 @@ export default new Vuex.Store({
     checkValidMoves (state, {valid}) {
       state.validMoves = valid
       state.hasValidMoves = Object.keys(valid).length > 0
+    },
+    stopGame(state, {winner}) {
+      state.gameOver = true
+      state.winner = winner
+      state.canPlay = false
+      state.canRoll = false
+      state.wins[winner] += 1
+    },
+    trimLogs(state) {
+      state.logs.splice(40, 10)
+    },
+    reset(state) {
+      const s = initialState()
+      Object.keys(s).forEach(key => {
+        state[key] = s[key]
+      })
     }
   },
   actions: {
@@ -77,7 +118,6 @@ export default new Vuex.Store({
     rollDice ({commit, state, dispatch}) {
       var die = Math.floor(Math.random() * 16).toString(2).padStart(4, '0').split('')
       var moves = die.reduce((a, b) => +a + +b, 0)
-      moves = 4
       commit('rollDice', {die, moves})
       if (moves === 0) {
         commit('log', {player: state.currentPlayer, text: 'rolled a zero! Skipping turn.'})
@@ -92,10 +132,16 @@ export default new Vuex.Store({
       }
       commit('nextTurn')
     },
-    log ({commit}, logEntry) {
-      commit('log', logEntry)
+    async log ({commit, state, dispatch}, logEntry) {
+      await commit('log', logEntry)
+      if (state.logs.length > 50) {
+        dispatch('trimLogs')
+      }
     },
-    movePiece({commit, state}, address) {
+    trimLogs ({commit}) {
+      commit('trimLogs')
+    },
+    movePiece({commit, state, dispatch}, address) {
       var moves = state.moves
       var player = state.currentPlayer
       var opponent = state.currentPlayer === 'player1' ? 'player2' : 'player1'
@@ -118,7 +164,19 @@ export default new Vuex.Store({
       if (!onReroll) {
         commit('changePlayer')
       }
-      commit('nextTurn')
+      var winner = checkForWin(state.finishedPips, state.pipsToWin)
+      if (winner) {
+        dispatch('gameOver', winner)
+      } else {
+        commit('nextTurn')
+      }
+    },
+    gameOver({commit}, winner) {
+      commit('log', {player: winner, text: 'won the game!'})
+      commit('stopGame', {winner})
+    },
+    newGame({commit}) {
+      commit('reset')
     }
   },
   getters: {
@@ -141,28 +199,3 @@ export default new Vuex.Store({
   }
 })
 
-function getValidMoves (state) {
-  var valid = {}
-  var otherPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
-  if (state.moves > 0) {
-    state.pips[state.currentPlayer].forEach((pip => {
-      var moveFrom = +pip
-      var moveTo = +pip + state.moves
-
-      var canMove = (
-        (moveTo === 15) ||
-        (
-          !valid[moveTo] &&
-          !(state.pips[state.currentPlayer].includes(moveTo)) &&
-          !!state.board[moveTo] &&
-          !(+moveTo === 8 && state.pips[otherPlayer].includes(8))
-        )
-      )
-
-      if (canMove) { 
-        valid[moveFrom] = moveTo
-      }
-    }))
-  }
-  return valid
-}

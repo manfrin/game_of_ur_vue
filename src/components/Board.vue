@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class='board-container'>
-      <h3 class='player-2-name'><PipDisplay playerSide='player2' /> Player 2</h3>
+      <span class='player-2-name player-name'><PipDisplay playerSide='player2' /> <Player player='player2' /> </span>
       <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player2' :hoveringOver='activeHover'/>
       <TileRow :pips='pips' :layout='boardLayout.middle' playerSide='middle' :hoveringOver='activeHover'/>
       <TileRow :pips='pips' :layout='boardLayout.player' playerSide='player1' :hoveringOver='activeHover'/>
-      <h3 class='player-1-name'>Player 1 <PipDisplay playerSide='player1' /></h3>
+      <span class='player-1-name player-name'> <Player player='player1' /> <PipDisplay playerSide='player1' /></span>
     </div>
   </div>
 </template>
@@ -13,12 +13,13 @@
 <script>
 import TileRow from "./TileRow.vue"
 import PipDisplay from "./PipDisplay.vue"
+import Player from "./Player.vue"
 
 import EventBus from '../event-bus'
 
 export default {
   name: 'Board',
-  components: {TileRow, PipDisplay},
+  components: {TileRow, PipDisplay, Player},
   props: {
     validMoves: Object,
   },
@@ -80,13 +81,13 @@ export default {
   padding: 6px;
 }
 .player-1-name {
-  text-align: left;
-  margin-left: 20px;
+  justify-content: left;
+  display: flex;
 }
 
 .player-2-name {
-  text-align: right;
-  margin-right: 20px;
+  justify-content: right;
+  display: flex;
 }
 
 </style>

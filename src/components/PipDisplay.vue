@@ -27,15 +27,16 @@ export default {
 
 <style scoped>
 .pip-display {
-  width: 250px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  font-size: .1em;
 }
 
 .pips {
   height: 20px;
   width: 20px;
   border-radius: 20px;
-  margin: 0 5px -3px 5px;
+  margin: 5px;
   background-color: #ccc;
   display: inline-block;
 }
