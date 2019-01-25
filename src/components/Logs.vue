@@ -31,6 +31,7 @@ export default {
   padding: 0;
   padding-top: 40px;
   margin: 0;
+  
 }
 
 ul {

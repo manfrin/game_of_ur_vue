@@ -230,27 +230,27 @@ export default {
 
 .board-space.hovering {
   /* border: 5px dashed #239289 !important; */
-  background-color: #fffb10c9 !important;
+  background-color: #7ecc18be !important;
 }
 
 .board-space.inBetween {
-  background-color: #fffb10c9 !important;
+  background-color: #7ecc18be !important;
 }
 
 .board-space.one-off {
-  transition: 1.75s !important;
+  transition: all 1s cubic-bezier(0.77, 0, 0.175, 1) !important;
 }
 
 .board-space.two-off {
-  transition: 3.5s !important;
+  transition: all 2s cubic-bezier(0.77, 0, 0.175, 1) !important;
 }
 
 .board-space.three-off {
-  transition: 5.25s !important;
+  transition: all 3.25s cubic-bezier(0.77, 0, 0.175, 1) !important;
 }
 
 .board-space.four-off {
-  transition: 7s !important;
+  transition: all 4.5s cubic-bezier(0.77, 0, 0.175, 1) !important;
 }
 /* 
 .board-space.inBetween:not(:first-child):not(:last-child) {

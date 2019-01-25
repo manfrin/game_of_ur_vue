@@ -179,7 +179,7 @@ span.player2 {
   display: inline-flex;
   background: rgb(51,51,51);
   background: linear-gradient(180deg, rgba(88, 82, 52, 0.273) 0%, rgba(255,255,255,0) 100%); 
-  margin-top: 0px;
+  margin-top: 40px;
   border-radius: 5px;
   width: 858px;
   height: 350px;

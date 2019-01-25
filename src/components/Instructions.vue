@@ -29,7 +29,7 @@ h2 {
 }
 
 p {
-  text-align: left;
+  text-align: justify;
   font-size: .85em;
   line-height: 1.5em;
   margin: 12px;
