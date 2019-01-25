@@ -3,6 +3,8 @@
     <div class='dice' v-for="(dice, index) in die" :key='index' :class='{rolledPip: dice > 0, disabled: canRoll}'>
       {{ dice }} 
     </div>
+    <button :disabled='!canRoll' @click='clickRoll'>Roll</button>
+    <button @click='togglePlay'>{{this.playOrPause}}</button>
   </div>
 </template>
 
@@ -12,12 +14,23 @@ import { mapState } from "vuex"
 export default {
   name: 'Die',
   computed: {
-    ...mapState(['die', 'canRoll', 'moves'])
+    playOrPause() {
+      return this.playing ? 'Pause' : 'Play'
+    },
+    ...mapState(['die', 'canRoll', 'moves', 'playing'])
+  },
+  methods: {
+    clickRoll() {
+      this.$store.dispatch('rollDice')
+    },
+    togglePlay() {
+      this.$store.dispatch('togglePlay')
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .dice {
   display: inline-block;
   background-color: #ddd;
@@ -38,5 +51,14 @@ export default {
   border: 3px solid rgb(83, 83, 83);
   background-color: #fff;
   color: #fff;
+}
+
+button {
+  line-height: 0;
+  padding: 20px;
+  font-size: 2em;
+  vertical-align: middle;
+  margin: 0 0px 0 10px;
+  height: 55px;
 }
 </style>

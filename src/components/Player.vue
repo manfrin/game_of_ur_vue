@@ -3,7 +3,7 @@
     <h3> {{ this.displayName }} [{{this.playerWins}} wins]</h3> 
     <label>
       <span class='ai-checkbox'>
-        AI: 
+        Autoplay: 
         <input type='checkbox' v-model='isAI' />
       </span>
     </label>
@@ -22,8 +22,7 @@ export default {
   },
   data() {
     return  {
-      interval: null,
-      isAI: false
+      interval: null
     }
   },
   beforeDestroy () {
@@ -44,6 +43,11 @@ export default {
       if (val) {
         this.setAct()
       }
+    },
+    playing: function(isPlaying) {
+      if (isPlaying && this.isAI) {
+        this.setAct()
+      }
     }
   },
   computed: {
@@ -56,15 +60,23 @@ export default {
     playerWins() {
       return this.wins[this.player]
     },
-    ...mapState(['currentPlayer', 'canRoll', 'canPlay', 'moves', 'pips', 'displayNames', 'wins'])
+    isAI: {
+      get() {
+        return this.ai[this.player]
+      },
+      set(val) {
+        this.$store.dispatch('setAI', {player: this.player, val})
+      }
+    },
+    ...mapState(['aiDelay', 'currentPlayer', 'canRoll', 'canPlay', 'moves', 'pips', 'displayNames', 'wins', 'ai', 'playing'])
   },
   methods: {
     setAct() {
       var vm = this
-      this.interval = setInterval(vm.act, 100)
+      this.interval = setInterval(vm.act, this.aiDelay)
     },
     act() {
-      if (this.isTurn && this.isAI) {
+      if (this.isTurn && this.isAI && this.playing) {
         if (this.canRoll) {
           this.roll()
         } else if (this.canPlay) {

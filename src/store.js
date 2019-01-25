@@ -14,23 +14,40 @@ import {
 
 const PIPS_IN_GAME = 7
 
+function initialConfig() {
+  return {
+    displayNames: {
+      player1: 'Player 1',
+      player2: 'Player 2'
+    },
+    pipsToWin: PIPS_IN_GAME,
+    board,
+    ai: {
+      player1: false,
+      player2: false,
+    },
+    aiType: {
+      player1: 'default',
+      player2: 'default',
+    },
+    playing: false,
+    aiDelay: 100,
+    aiContinualPlay: false,
+    page: 'game'
+  }
+}
+
 function initialState() {
   return {
     pips: {
       player1: new Array(PIPS_IN_GAME).fill(0),
       player2: new Array(PIPS_IN_GAME).fill(0),
     },
-    displayNames: {
-      player1: 'Player 1',
-      player2: 'Player 2'
-    },
     finishedPips: {
       player1: 0,
       player2: 0
     },
-    pipsToWin: PIPS_IN_GAME,
     gameOver: false,
-    playing: true,
     winner: null,
     canRoll: true,
     canPlay: false,
@@ -38,8 +55,6 @@ function initialState() {
     moves: 0,
     validMoves: {},
     currentPlayer: 'player1',
-    board,
-    logs: []
   }
 }
 
@@ -49,6 +64,8 @@ export default new Vuex.Store({
       player1: 0,
       player2: 0
     },
+    logs: [],
+    ...initialConfig(),
     ...initialState()
   },
   mutations: {
@@ -100,6 +117,23 @@ export default new Vuex.Store({
       Object.keys(s).forEach(key => {
         state[key] = s[key]
       })
+    },
+    setAI(state, {player, val}) {
+      Vue.set(state.ai, player, val)
+    },
+    togglePlay(state) {
+      state.playing = !state.playing
+    },
+    setConfig(state, {parent, field, value}) {
+      if (parent) {
+        Vue.set(state[parent], field, value)
+      } else {
+        state[field] = value
+      }
+    },
+    setPage(state, page) {
+      state.page = page
+      state.playing = false
     }
   },
   actions: {
@@ -178,6 +212,18 @@ export default new Vuex.Store({
     },
     newGame({commit}) {
       commit('reset')
+    },
+    setAI({commit}, ai) {
+      commit('setAI', ai)
+    },
+    togglePlay({commit}) {
+      commit('togglePlay')
+    },
+    setConfig({commit}, {parent, field, value}) {
+      commit('setConfig', {parent, field, value})
+    },
+    changePage({commit}, page) {
+      commit('setPage', page)
     }
   },
   getters: {

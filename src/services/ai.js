@@ -26,6 +26,15 @@ const pipOnCastle = (pips) => {
   return pips.includes(8)
 }
 
+export const AI_TYPES = {
+  default: ['score', 'reroll', 'bump', 'furthest', 'safe'],
+  rush: ['score', 'reroll', 'furthest', 'safe', 'bump'],
+  aggressive: ['bump', 'castle', 'safe', 'reroll', 'furthest'],
+  peaceful: ['score', 'reroll', 'safe', 'furthest', 'bump']
+}
+
+export const AI_TYPE_KEYS = Object.keys(AI_TYPES)
+
 const ai = function(pips, opponentPips, moves) {
   var opponentVulnPips = opponentVulnerable(opponentPips)
   var targets = potentialMoves(pips, moves)

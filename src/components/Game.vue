@@ -13,16 +13,24 @@
           <div class='die'>
             <Die />
           </div>
-          <Controls />
         </div>
         <h2>Made by Mike Manfrin / <a href="https://twitter.com/manfrin">@manfrin</a> / <a href="https://github.com/manfrin">github.com/manfrin</a></h2>
         <h4>Source Code available on the <a href="https://github.com/manfrin/game_of_ur_vue">repo</a>. I also made a <a href="https://game.manfrincdn.com">Mahjong-ish hex puzzle game</a>.</h4>
       </div>
     </header>
-    <Board class='board' v-if="!gameOver" />
-    <div v-if="gameOver">
-      <h1>{{ winner }} has won!</h1>
-      <button @click='newGame'>New Game</button>
+    <navigation>
+      <button @click='changePage(`game`)'>Board</button>
+      <button @click='changePage(`config`)'>Config</button>
+    </navigation>
+    <div v-if='page === `game`'>
+      <Board class='board' v-if="!gameOver" />
+      <div v-if="gameOver">
+        <h1>{{ winner }} has won!</h1>
+        <button @click='newGame'>New Game</button>
+      </div>
+    </div>
+    <div v-if='page === `config`'>
+      <Config />
     </div>
     <div class='bottom-container'>
       <Logs />
@@ -33,7 +41,7 @@
 
 <script>
 import Board from "./Board.vue"
-import Controls from "./Controls.vue"
+import Config from "./Config.vue"
 import Die from "./Die.vue"
 import Logs from "./Logs.vue"
 import Instructions from "./Instructions.vue"
@@ -45,7 +53,7 @@ export default {
   name: 'Game',
   components: {
     Board, 
-    Controls, 
+    Config, 
     Die,
     Logs,
     Instructions
@@ -56,6 +64,9 @@ export default {
     },
     newGame() {
       this.$store.dispatch('newGame')
+    },
+    changePage(page) {
+      this.$store.dispatch('changePage', page)
     }
   },
   watch: {
@@ -83,7 +94,7 @@ export default {
       return this.currentPlayer === 'player1' ? 'Player 1' : 'Player 2'
     },
     ...mapState([
-      'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves', 'finishedPips', 'pipsToWin', 'gameOver', 'winner', 'playing'
+      'page', 'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves', 'finishedPips', 'pipsToWin', 'gameOver', 'winner', 'playing'
     ])
   }
 }
@@ -92,6 +103,14 @@ export default {
 <style>
 
 header {
+  width: 900px;
+  display: flex;
+  text-align: left;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+navigation {
   width: 900px;
   display: inline-flex;
   text-align: left;
