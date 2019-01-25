@@ -34,6 +34,8 @@ import Die from "./Die.vue"
 import Logs from "./Logs.vue"
 import Instructions from "./Instructions.vue"
 
+import { mapState } from "vuex"
+
 export default {
   name: 'Game',
   components: {
@@ -57,24 +59,6 @@ export default {
     }
   },
   computed: {
-    pips() {
-      return this.$store.state.pips
-    },
-    die() {
-      return this.$store.state.die
-    },
-    canPlay() {
-      return this.$store.state.canPlay
-    },
-    moves() {
-      return this.$store.state.moves
-    },
-    board() {
-      return this.$store.state.board
-    },
-    currentPlayer() {
-      return this.$store.state.currentPlayer
-    },
     hasLegalMoves() {
       return this.validMoves[this.currentPlayer].length > 0
     },
@@ -84,12 +68,9 @@ export default {
     currentPlayerReadable() {
       return this.currentPlayer === 'player1' ? 'Player 1' : 'Player 2'
     },
-    hasValidMoves() {
-      return this.$store.state.hasValidMoves
-    },
-    validMoves: function () {
-      return this.$store.state.validMoves
-    }
+    ...mapState([
+      'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves'
+    ])
   }
 }
 </script>

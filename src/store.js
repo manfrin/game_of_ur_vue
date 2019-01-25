@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 import board from './data/board.js'
+import EventBus from './event-bus'
 
 export default new Vuex.Store({
   state: {
@@ -20,21 +21,11 @@ export default new Vuex.Store({
     die: [0, 0, 0, 0],
     moves: 0,
     validMoves: {},
-    hoveringOver: {
-      address: 0,
-      playerSide: 'player1'
-    },
     currentPlayer: 'player1',
     board,
     logs: []
   },
   mutations: {
-    hover (state, tile) {
-      state.hoveringOver = tile
-    },
-    notHovering (state) {
-      state.hoveringOver = {}
-    },
     changePlayer (state) {
       state.currentPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
     },
@@ -47,7 +38,7 @@ export default new Vuex.Store({
     nextTurn (state) {
       state.canPlay = false
       state.canRoll = true
-      state.hoveringOver = {}
+      EventBus.$emit('notHovering')
     },
     log (state, logEntry) {
       state.logs.push(logEntry)
@@ -58,50 +49,27 @@ export default new Vuex.Store({
     movePiece (state, {player, idx, address}) {
       Vue.set(state.pips[player], idx, address)
       state.validMoves = {}
-      state.hoveringOver = {}
     },
     winPiece (state, {player, idx}) {
       Vue.delete(state.pips[player], idx)
       state.finishedPips[player] += 1
       state.validMoves = {}
-      state.hoveringOver = {}
     },
-    checkValidMoves (state) {
-      var valid = {}
-      var otherPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
-      if (state.moves > 0) {
-        state.pips[state.currentPlayer].forEach((pip => {
-          var moveFrom = +pip
-          var moveTo = +pip + state.moves
-
-          var canMove = (
-            (moveTo === 15) ||
-            (
-              !valid[moveTo] &&
-              !(state.pips[state.currentPlayer].includes(moveTo)) &&
-              !!state.board[moveTo] &&
-              !(+moveTo === 8 && state.pips[otherPlayer].includes(8))
-            )
-          )
-
-          if (canMove) { 
-            valid[moveFrom] = moveTo
-          }
-        }))
-      }
+    checkValidMoves (state, {valid}) {
       state.validMoves = valid
       state.hasValidMoves = Object.keys(valid).length > 0
     }
   },
   actions: {
-    checkValidMoves({commit}) {
-      commit('checkValidMoves')
-    },
-    hover ({commit}, tile) {
-      commit('hover', tile)
-    },
-    notHovering ({commit}) {
-      commit('notHovering')
+    checkValidMoves({commit, state}) {
+      var valid = getValidMoves(state)
+      if (!(Object.keys(valid).length > 0)) {
+        commit('log', {player: state.currentPlayer, text: 'cannot move any pieces, skipping turn.'})
+        commit('changePlayer')
+        commit('nextTurn')
+      } else {
+        commit('checkValidMoves', {valid})
+      }
     },
     changePlayer ({commit}) {
       commit('changePlayer')
@@ -109,6 +77,7 @@ export default new Vuex.Store({
     rollDice ({commit, state, dispatch}) {
       var die = Math.floor(Math.random() * 16).toString(2).padStart(4, '0').split('')
       var moves = die.reduce((a, b) => +a + +b, 0)
+      moves = 4
       commit('rollDice', {die, moves})
       if (moves === 0) {
         commit('log', {player: state.currentPlayer, text: 'rolled a zero! Skipping turn.'})
@@ -171,3 +140,29 @@ export default new Vuex.Store({
     }
   }
 })
+
+function getValidMoves (state) {
+  var valid = {}
+  var otherPlayer = state.currentPlayer === 'player1' ? 'player2' : 'player1'
+  if (state.moves > 0) {
+    state.pips[state.currentPlayer].forEach((pip => {
+      var moveFrom = +pip
+      var moveTo = +pip + state.moves
+
+      var canMove = (
+        (moveTo === 15) ||
+        (
+          !valid[moveTo] &&
+          !(state.pips[state.currentPlayer].includes(moveTo)) &&
+          !!state.board[moveTo] &&
+          !(+moveTo === 8 && state.pips[otherPlayer].includes(8))
+        )
+      )
+
+      if (canMove) { 
+        valid[moveFrom] = moveTo
+      }
+    }))
+  }
+  return valid
+}

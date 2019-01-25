@@ -5,6 +5,7 @@
       :key='address + "_" + playerSide'
       :address='address'
       :playerSide='playerSide'
+      :hoveringOver='hoveringOver'
     />
   </div>
 </template>
@@ -16,10 +17,9 @@ export default {
   name: 'TileRow',
   components: {Tile},
   props: {
-    validMoves: Object,
     playerSide: String,
     layout: Array,
-    hoveringTile: Number,
+    hoveringOver: Object
   },
   methods: {
   },

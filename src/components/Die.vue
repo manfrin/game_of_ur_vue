@@ -7,18 +7,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
+
 export default {
   name: 'Die',
   computed: {
-    die() {
-      return this.$store.state.die
-    },
-    canRoll() {
-      return this.$store.state.canRoll
-    },
-    moves() {
-      return this.$store.state.moves
-    }
+    ...mapState(['die', 'canRoll', 'moves'])
   }
 }
 </script>

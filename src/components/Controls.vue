@@ -3,12 +3,11 @@
 </template>
 
 <script>
+import {mapState} from "vuex"
 export default {
   name: 'Controls',
   computed: {
-    canRoll() {
-      return this.$store.state.canRoll
-    }
+    ...mapState(['canRoll'])
   },
   methods: {
     clickRoll() {

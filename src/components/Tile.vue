@@ -5,17 +5,21 @@
 </template>
 
 <script>
+import EventBus from '../event-bus'
+import { mapState } from 'vuex';
+
 export default {
   name: 'Tile',
   props: {
     address: Number,
-    playerSide: String
+    playerSide: String,
+    hoveringOver: Object
   },
   computed: {
     distanceFromHoverSource() {
       if (this.activeHover && this.checkHover) {
-        var moves = this.$store.state.moves
-        var {address, canMoveFrom} = this.$store.state.hoveringOver
+        var moves = this.moves
+        var {address, canMoveFrom} = this.hoveringOver
         var start = (canMoveFrom ? +address : (+address - moves))
         return this.address - start
       } else {
@@ -49,7 +53,7 @@ export default {
         (this.$store.getters.opponent !== this.playerSide)
     },
     activeHover() {
-      return Object.keys(this.$store.state.hoveringOver).length > 0
+      return Object.keys(this.hoveringOver).length > 0
     },
     canMoveTo () {
       return this.onside && this.validTargets.includes(this.address)
@@ -62,10 +66,10 @@ export default {
       return this.canMoveTo || this.canMoveFrom
     },
     validSources () {
-      return Object.keys(this.$store.state.validMoves)
+      return Object.keys(this.validMoves)
     },
     validTargets () {
-      return Object.values(this.$store.state.validMoves)
+      return Object.values(this.validMoves)
     },
     classObject() {
       var type = this.type
@@ -89,8 +93,7 @@ export default {
       return !(this.inBetween || this.hovering)
     },
     inBetween() {
-      var {address, canMoveTo, canMoveFrom} = this.$store.state.hoveringOver
-      var {moves} = this.$store.state
+      var {address, canMoveTo, canMoveFrom} = this.hoveringOver
 
       var upperBound, lowerBound = 0
 
@@ -100,9 +103,9 @@ export default {
 
       if (canMoveFrom) {
         lowerBound = address
-        upperBound = address + moves
+        upperBound = address + this.moves
       } else if (canMoveTo) {
-        lowerBound = address - moves
+        lowerBound = address - this.moves
         upperBound = address
       } else {
         return false
@@ -113,8 +116,8 @@ export default {
         this.address < upperBound
     },
     hovering() {
-      var {address, canMoveTo, canMoveFrom} = this.$store.state.hoveringOver
-      var moves = this.$store.state.moves
+      var {address, canMoveTo, canMoveFrom} = this.hoveringOver
+      var moves = this.moves
 
       var pairAddress = address
       if (canMoveTo) {
@@ -140,43 +143,41 @@ export default {
       // This is bad.
       var pip = ''
       if (this.playerSide === 'middle') {
-        if (this.$store.state.pips.player1.includes(this.address)) {
+        if (this.pips.player1.includes(this.address)) {
           pip = 'player1'
         }
-        if (this.$store.state.pips.player2.includes(this.address)) {
+        if (this.pips.player2.includes(this.address)) {
           pip = 'player2'
         }
-      } else if (this.$store.state.pips[this.playerSide].includes(this.address)) {
+      } else if (this.pips[this.playerSide].includes(this.address)) {
         pip = this.playerSide
       }
       return pip
     },
     type () {
-      return this.$store.state.board[this.address].type
+      return this.board[this.address].type
     },
     onside () {
       return (this.currentPlayer === this.playerSide) || (this.playerSide === 'middle')
     },
-    currentPlayer () {
-      return this.$store.state.currentPlayer
-    }
+    ...mapState(['currentPlayer', 'board', 'pips', 'moves', 'validMoves'])
   },
   methods: {
     move() {
       if (this.canMoveTo) {
         this.$store.dispatch('movePiece', this.address)
       } else if (this.canMoveFrom) {
-        this.$store.dispatch('movePiece', this.address + this.$store.state.moves)
+        this.$store.dispatch('movePiece', this.address + this.moves)
       }
     },
     isHovering() {
       if (this.checkHover && this.onside) {
-        this.$store.dispatch('hover', {address: this.address, playerSide: this.playerSide, canMoveTo: this.canMoveTo, canMoveFrom: this.canMoveFrom})
+        EventBus.$emit('hovering', {address: this.address, playerSide: this.playerSide, canMoveTo: this.canMoveTo, canMoveFrom: this.canMoveFrom})
       }
     },
     notHovering() {
       if (this.checkHover) {
-        this.$store.dispatch('notHovering')
+        EventBus.$emit('notHovering')
       }
     }
   }

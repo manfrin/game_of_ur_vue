@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import {mapState} from "vuex"
+
 export default {
   name: 'Logs',
   methods: {
@@ -17,9 +19,7 @@ export default {
     }
   },
   computed: {
-    logs () {
-      return this.$store.state.logs
-    }
+    ...mapState(['logs'])
   }
 }
 </script>
