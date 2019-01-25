@@ -18,10 +18,10 @@
         <h4>Source Code available on the <a href="https://github.com/manfrin/game_of_ur_vue">repo</a>. I also made a <a href="https://game.manfrincdn.com">Mahjong-ish hex puzzle game</a>.</h4>
       </div>
     </header>
-    <navigation>
+    <nav>
       <button @click='changePage(`game`)'>Board</button>
       <button @click='changePage(`config`)'>Config</button>
-    </navigation>
+    </nav>
     <div v-if='page === `game`'>
       <Board class='board' v-if="!gameOver" />
       <div v-if="gameOver">
@@ -31,6 +31,10 @@
     </div>
     <div v-if='page === `config`'>
       <Config />
+    </div>
+    <div class="players-container">
+      <span class='player-2-name player-name'> <Player player='player2' /> <PipDisplay playerSide='player2' /> </span>
+      <span class='player-1-name player-name'> <Player player='player1' /> <PipDisplay playerSide='player1' /> </span>
     </div>
     <div class='bottom-container'>
       <Logs />
@@ -44,6 +48,8 @@ import Board from "./Board.vue"
 import Config from "./Config.vue"
 import Die from "./Die.vue"
 import Logs from "./Logs.vue"
+import Player from "./Player.vue"
+import PipDisplay from "./PipDisplay.vue"
 import Instructions from "./Instructions.vue"
 
 import { mapState } from "vuex"
@@ -56,7 +62,9 @@ export default {
     Config, 
     Die,
     Logs,
-    Instructions
+    Instructions,
+    Player,
+    PipDisplay
   },
   methods: {
     nextTurn(nextPlayer = true) {
@@ -110,7 +118,7 @@ header {
   margin: 0 auto;
 }
 
-navigation {
+nav {
   width: 900px;
   display: inline-flex;
   text-align: left;
@@ -183,6 +191,14 @@ span.player1 {
 span.player2 {
   background-color: #ff0000;
   color: #fff;
+}
+
+.players-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 900px;
+  margin: 0 auto;
 }
 
 .die {

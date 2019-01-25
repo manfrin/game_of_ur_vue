@@ -4,7 +4,6 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 import board from './data/board.js'
-import EventBus from './event-bus'
 import getValidMoves from './services/get-valid-moves'
 import {
   checkForWin,
@@ -18,22 +17,23 @@ function initialConfig() {
   return {
     displayNames: {
       player1: 'Player 1',
-      player2: 'Player 2'
+      player2: 'Computer'
     },
     pipsToWin: PIPS_IN_GAME,
     board,
     ai: {
       player1: false,
-      player2: false,
+      player2: true,
     },
     aiType: {
       player1: 'default',
       player2: 'default',
     },
     playing: false,
-    aiDelay: 100,
+    aiDelay: 1000,
     aiContinualPlay: false,
-    page: 'game'
+    page: 'game',
+    hoverEffects: true
   }
 }
 
@@ -81,7 +81,6 @@ export default new Vuex.Store({
     nextTurn (state) {
       state.canPlay = false
       state.canRoll = true
-      EventBus.$emit('notHovering')
     },
     log (state, logEntry) {
       state.logs.push(logEntry)
@@ -121,8 +120,9 @@ export default new Vuex.Store({
     setAI(state, {player, val}) {
       Vue.set(state.ai, player, val)
     },
-    togglePlay(state) {
-      state.playing = !state.playing
+    togglePlay(state, opts = {}) {
+      var to = opts.force ? true : !state.playing
+      state.playing = to
     },
     setConfig(state, {parent, field, value}) {
       if (parent) {
@@ -133,7 +133,6 @@ export default new Vuex.Store({
     },
     setPage(state, page) {
       state.page = page
-      state.playing = false
     }
   },
   actions: {
@@ -206,9 +205,13 @@ export default new Vuex.Store({
         commit('nextTurn')
       }
     },
-    gameOver({commit}, winner) {
+    gameOver({commit, state, dispatch}, winner) {
       commit('log', {player: winner, text: 'won the game!'})
       commit('stopGame', {winner})
+
+      if (state.aiContinualPlay && state.ai.player1 && state.ai.player2) {
+        dispatch('continueNewAIGame')
+      }
     },
     newGame({commit}) {
       commit('reset')
@@ -224,6 +227,10 @@ export default new Vuex.Store({
     },
     changePage({commit}, page) {
       commit('setPage', page)
+    },
+    continueNewAIGame({commit}) {
+      commit('reset')
+      commit('togglePlay', {force: true})
     }
   },
   getters: {

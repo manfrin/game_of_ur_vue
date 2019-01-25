@@ -16,6 +16,10 @@
         Pips Needed to Win:
         <input type="integer" v-model.number='pipsToWin' />
       </label>
+      <label>
+        Hover Effects:
+        <input type="checkbox" v-model='hoverEffects' />
+      </label>
     </fieldset>
     <fieldset>
       <legend>Player Settings</legend>
@@ -96,6 +100,14 @@ function genPlayerGetSet(attributes) {
   return result
 }
 
+function genGetSets(fields) {
+  var results = {}
+  fields.forEach(field => {
+    results = Object.assign(results, genGetSet(field))
+  })
+  return results
+}
+
 export default {
   name: 'Config',
   data () {
@@ -105,9 +117,7 @@ export default {
   },
   computed: {
     ...mapState(['canRoll', 'aiDelay', 'aiContinualPlay', 'ai', 'aiType', 'pipsToWin', 'displayNames']),
-    ...genGetSet('aiDelay'),
-    ...genGetSet('aiContinualPlay'),
-    ...genGetSet('pipsToWin'),
+    ...genGetSets(['aiDelay', 'aiContinualPlay', 'pipsToWin', 'hoverEffects']),
     ...genPlayerGetSet(['displayNames', 'ai', 'aiType']),
   },
   methods: {

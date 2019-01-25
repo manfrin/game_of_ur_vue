@@ -1,6 +1,6 @@
 <template>
   <div class='player-name-container'>
-    <h3> {{ this.displayName }} [{{this.playerWins}} wins]</h3> 
+    <h3> {{ this.displayNameWithAI }} [{{this.playerWins}} wins]</h3> 
     <label>
       <span class='ai-checkbox'>
         Autoplay: 
@@ -51,8 +51,10 @@ export default {
     }
   },
   computed: {
-    displayName() {
-      return this.isAI ? 'AI' : this.displayNames[this.player]
+    displayNameWithAI() {
+      var name = this.displayNames[this.player]
+      this.isAI && (name += ' [AI]')
+      return name
     },
     isTurn() {
       return this.currentPlayer === this.player
