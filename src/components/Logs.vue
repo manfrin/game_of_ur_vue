@@ -17,11 +17,11 @@ export default {
   name: 'Logs',
   methods: {
     readablePlayer(player) {
-      return player === 'player1' ? 'Player 1' : 'Player 2'
+      return this.displayNames[player]
     }
   },
   computed: {
-    ...mapState(['logs'])
+    ...mapState(['logs', 'displayNames'])
   },
   mounted() {
     var child = document.getElementsByClassName('log-container')[0]

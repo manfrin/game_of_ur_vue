@@ -27,26 +27,30 @@ export default {
       }
     },
     hoverDistanceClass() {
-      var distClass
+      if (!this.hoverEffects) {
+        return ''
+      } else { 
+        var distClass
 
-      switch(this.distanceFromHoverSource) {
-        case 1:
-          distClass = 'one-off'
-          break
-        case 2:
-          distClass = 'two-off'
-          break
-        case 3:
-          distClass = 'three-off'
-          break
-        case 4:
-          distClass = 'four-off'
-          break
-        default:
-          distClass = ''
+        switch(this.distanceFromHoverSource) {
+          case 1:
+            distClass = 'one-off'
+            break
+          case 2:
+            distClass = 'two-off'
+            break
+          case 3:
+            distClass = 'three-off'
+            break
+          case 4:
+            distClass = 'four-off'
+            break
+          default:
+            distClass = ''
+        }
+
+        return distClass
       }
-
-      return distClass
     },
     checkHover() {
       return this.$store.state.canPlay &&
@@ -87,7 +91,7 @@ export default {
       }
     },
     shouldDim() {
-      return this.checkHover && !this.onside
+      return this.hoverEffects && this.checkHover && !this.onside
     },
     notInvolved() {
       return !(this.inBetween || this.hovering)
@@ -160,14 +164,14 @@ export default {
     onside () {
       return (this.currentPlayer === this.playerSide) || (this.playerSide === 'middle')
     },
-    ...mapState(['currentPlayer', 'board', 'pips', 'moves', 'validMoves'])
+    ...mapState(['hoverEffects', 'currentPlayer', 'board', 'pips', 'moves', 'validMoves'])
   },
   methods: {
     move() {
       if (this.canMoveTo) {
-        this.$store.dispatch('movePiece', this.address)
+        this.$store.dispatch('movePiece', {address: this.address})
       } else if (this.canMoveFrom) {
-        this.$store.dispatch('movePiece', this.address + this.moves)
+        this.$store.dispatch('movePiece', {address: this.address + this.moves})
       }
     },
     isHovering() {

@@ -13,6 +13,10 @@
         <input type="checkbox" v-model='aiContinualPlay' />
       </label>
       <label>
+        Randomize AI After Game:
+        <input type="checkbox" v-model='aiRandomize' />
+      </label>
+      <label>
         Pips Needed to Win:
         <input type="integer" v-model.number='pipsToWin' />
       </label>
@@ -117,7 +121,7 @@ export default {
   },
   computed: {
     ...mapState(['canRoll', 'aiDelay', 'aiContinualPlay', 'ai', 'aiType', 'pipsToWin', 'displayNames']),
-    ...genGetSets(['aiDelay', 'aiContinualPlay', 'pipsToWin', 'hoverEffects']),
+    ...genGetSets(['aiDelay', 'aiContinualPlay', 'pipsToWin', 'hoverEffects', 'aiRandomize']),
     ...genPlayerGetSet(['displayNames', 'ai', 'aiType']),
   },
   methods: {

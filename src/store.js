@@ -10,19 +10,31 @@ import {
   otherPlayer,
   addressToRead
 } from './helpers'
+import {AI_TYPE_KEYS} from './services/ai'
+
+function aiWinStruct() {
+  var struct = {}
+  AI_TYPE_KEYS.forEach(key => {
+    struct[key] = {}
+    AI_TYPE_KEYS.forEach(o => {
+      struct[key][o] = 0
+    })
+  })
+  return struct
+}
 
 const PIPS_IN_GAME = 7
 
 function initialConfig() {
   return {
     displayNames: {
-      player1: 'Player 1',
-      player2: 'Computer'
+      player1: 'Marcus Agrippa',
+      player2: 'Marc Anthony'
     },
     pipsToWin: PIPS_IN_GAME,
     board,
     ai: {
-      player1: false,
+      player1: true,
       player2: true,
     },
     aiType: {
@@ -30,10 +42,12 @@ function initialConfig() {
       player2: 'default',
     },
     playing: false,
-    aiDelay: 1000,
-    aiContinualPlay: false,
+    aiDelay: 100,
+    aiContinualPlay: true,
+    aiRandomize: true,
+    aiWins: {...aiWinStruct()},
     page: 'game',
-    hoverEffects: true
+    hoverEffects: false
   }
 }
 
@@ -54,7 +68,9 @@ function initialState() {
     die: [0, 0, 0, 0],
     moves: 0,
     validMoves: {},
+    hasValidMoves: false,
     currentPlayer: 'player1',
+    sequence: 0
   }
 }
 
@@ -81,8 +97,12 @@ export default new Vuex.Store({
     nextTurn (state) {
       state.canPlay = false
       state.canRoll = true
+      state.sequence += 1
     },
     log (state, logEntry) {
+      if (state.logs.length > 50) {
+        state.logs.splice(40, state.logs.length - 49)
+      }
       state.logs.push(logEntry)
     },
     bumpPiece (state, {idx, player}) {
@@ -97,9 +117,9 @@ export default new Vuex.Store({
       state.finishedPips[player] += 1
       state.validMoves = {}
     },
-    checkValidMoves (state, {valid}) {
+    checkValidMoves (state, {valid, hasValidMoves}) {
       state.validMoves = valid
-      state.hasValidMoves = Object.keys(valid).length > 0
+      state.hasValidMoves = hasValidMoves
     },
     stopGame(state, {winner}) {
       state.gameOver = true
@@ -107,6 +127,10 @@ export default new Vuex.Store({
       state.canPlay = false
       state.canRoll = false
       state.wins[winner] += 1
+      if (state.ai.player1 && state.ai.player2) {
+        // lol
+        state.aiWins[state.aiType[winner]][state.aiType[otherPlayer(winner)]] += 1
+      }
     },
     trimLogs(state) {
       state.logs.splice(40, 10)
@@ -133,17 +157,21 @@ export default new Vuex.Store({
     },
     setPage(state, page) {
       state.page = page
+    },
+    randomizeAI(state) {
+      state.aiType.player1 = AI_TYPE_KEYS[Math.floor(Math.random() * AI_TYPE_KEYS.length)]
+      state.aiType.player2 = AI_TYPE_KEYS[Math.floor(Math.random() * AI_TYPE_KEYS.length)]
     }
   },
   actions: {
     checkValidMoves({commit, state}) {
       var valid = getValidMoves(state)
-      if (!(Object.keys(valid).length > 0)) {
+      var hasValidMoves = Object.keys(valid).length > 0
+      commit('checkValidMoves', {valid, hasValidMoves})
+      if (!hasValidMoves) {
         commit('log', {player: state.currentPlayer, text: 'cannot move any pieces, skipping turn.'})
         commit('changePlayer')
         commit('nextTurn')
-      } else {
-        commit('checkValidMoves', {valid})
       }
     },
     changePlayer ({commit}) {
@@ -166,8 +194,8 @@ export default new Vuex.Store({
       }
       commit('nextTurn')
     },
-    async log ({commit, state, dispatch}, logEntry) {
-      await commit('log', logEntry)
+    log ({commit, state, dispatch}, logEntry) {
+      commit('log', logEntry)
       if (state.logs.length > 50) {
         dispatch('trimLogs')
       }
@@ -175,21 +203,22 @@ export default new Vuex.Store({
     trimLogs ({commit}) {
       commit('trimLogs')
     },
-    movePiece({commit, state, dispatch}, address) {
+    movePiece({commit, state, dispatch}, {address, player}) {
+      address = +address
       var moves = state.moves
-      var player = state.currentPlayer
+      player = player || state.currentPlayer
       var opponent = otherPlayer(state.currentPlayer)
       var pipLoc = +address - moves
       var pipIdx = state.pips[player].indexOf(pipLoc)
 
-      if (+address === 15) {
+      if (address === 15) {
         commit('log', {player: state.currentPlayer, text: 'got a piece to the end!'})
         commit('winPiece', {player, idx: pipIdx})
       } else {
-        var oppPipIdx = state.pips[opponent].indexOf(+address)
-        var onReroll = state.board[+address].type === 'reroll'
+        var oppPipIdx = state.pips[opponent].indexOf(address)
+        var onReroll = [4, 13].includes(address)
         commit('log', {player: player, text: `moved a piece from ${addressToRead(address - moves)} to ${addressToRead(address)}.`})
-        if (oppPipIdx >= 0 && !state.board[+address].safe) {
+        if (oppPipIdx >= 0 && !state.board[address].safe) {
           commit('bumpPiece', {idx: oppPipIdx, player: opponent})
           commit('log', {player: player, text: `took opponents piece.`})
         }
@@ -210,7 +239,7 @@ export default new Vuex.Store({
       commit('stopGame', {winner})
 
       if (state.aiContinualPlay && state.ai.player1 && state.ai.player2) {
-        dispatch('continueNewAIGame')
+        dispatch('continueNewAIGame', {randomize: state.aiRandomize})
       }
     },
     newGame({commit}) {
@@ -228,8 +257,11 @@ export default new Vuex.Store({
     changePage({commit}, page) {
       commit('setPage', page)
     },
-    continueNewAIGame({commit}) {
+    continueNewAIGame({commit}, {randomize}) {
       commit('reset')
+      if (randomize) {
+        commit('randomizeAI')
+      }
       commit('togglePlay', {force: true})
     }
   },

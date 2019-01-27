@@ -20,6 +20,7 @@
     </header>
     <nav>
       <button @click='changePage(`game`)'>Board</button>
+      <button @click='changePage(`aiStats`)'>AI Stats</button>
       <button @click='changePage(`config`)'>Config</button>
     </nav>
     <div v-if='page === `game`'>
@@ -31,6 +32,9 @@
     </div>
     <div v-if='page === `config`'>
       <Config />
+    </div>
+    <div v-if='page === `aiStats`'>
+      <AIStats />
     </div>
     <div class="players-container">
       <span class='player-2-name player-name'> <Player player='player2' /> <PipDisplay playerSide='player2' /> </span>
@@ -51,6 +55,7 @@ import Logs from "./Logs.vue"
 import Player from "./Player.vue"
 import PipDisplay from "./PipDisplay.vue"
 import Instructions from "./Instructions.vue"
+import AIStats from "./AIStats.vue"
 
 import { mapState } from "vuex"
 import EventBus from '../event-bus'
@@ -64,7 +69,8 @@ export default {
     Logs,
     Instructions,
     Player,
-    PipDisplay
+    PipDisplay,
+    AIStats
   },
   methods: {
     nextTurn(nextPlayer = true) {
@@ -89,20 +95,20 @@ export default {
         this.$store.dispatch('gameOver')
         EventBus.$emit('gameOver')
       }
+    },
+    canRoll: function(val) {
+      if (val) { EventBus.$emit('playerCanRoll') }
     }
   },
   computed: {
-    hasLegalMoves() {
-      return this.validMoves[this.currentPlayer].length > 0
-    },
     otherPlayer() {
       return this.currentPlayer === 'player1' ? 'player2' : 'player1'
     },
     currentPlayerReadable() {
-      return this.currentPlayer === 'player1' ? 'Player 1' : 'Player 2'
+      return this.displayNames[this.currentPlayer]
     },
     ...mapState([
-      'page', 'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves', 'finishedPips', 'pipsToWin', 'gameOver', 'winner', 'playing'
+      'displayNames', 'page', 'pips', 'die', 'canPlay', 'moves', 'board', 'currentPlayer', 'hasValidMoves', 'validMoves', 'finishedPips', 'pipsToWin', 'gameOver', 'winner', 'playing'
     ])
   }
 }

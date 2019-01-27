@@ -12,7 +12,7 @@
 
 <script>
 import { mapState } from "vuex"
-import ai from '../services/ai';
+import { aiStrategy } from '../services/ai';
 import { otherPlayer } from '../helpers'
 
 export default {
@@ -31,26 +31,16 @@ export default {
     }
   },
   watch: {
-    isTurn: function(val) {
-      if (val) {
-        this.setAct()
-      } else {
-        clearInterval(this.interval)
-        this.interval = null
-      }
-    },
-    isAI: function(val) {
+    aiShouldPlay: function(val) {
       if (val) {
         this.setAct()
       }
     },
-    playing: function(isPlaying) {
-      if (isPlaying && this.isAI) {
-        this.setAct()
-      }
-    }
   },
   computed: {
+    aiShouldPlay() {
+      return this.playing && this.isTurn && this.isAI
+    },
     displayNameWithAI() {
       var name = this.displayNames[this.player]
       this.isAI && (name += ' [AI]')
@@ -62,6 +52,9 @@ export default {
     playerWins() {
       return this.wins[this.player]
     },
+    strat() {
+      return this.aiType[this.player]
+    },
     isAI: {
       get() {
         return this.ai[this.player]
@@ -70,20 +63,27 @@ export default {
         this.$store.dispatch('setAI', {player: this.player, val})
       }
     },
-    ...mapState(['aiDelay', 'currentPlayer', 'canRoll', 'canPlay', 'moves', 'pips', 'displayNames', 'wins', 'ai', 'playing'])
+    ...mapState(['aiDelay', 'currentPlayer', 'canRoll', 'canPlay', 'moves', 'pips', 'displayNames', 'wins', 'ai', 'playing', 'aiType'])
   },
   methods: {
     setAct() {
       var vm = this
-      this.interval = setInterval(vm.act, this.aiDelay)
+      this.interval = setTimeout(vm.act, this.aiDelay)
+    },
+    clearAct() {
+      clearInterval(this.interval)
+      this.interval = null
     },
     act() {
-      if (this.isTurn && this.isAI && this.playing) {
+      if (!this.playing || !this.isTurn || !this.isAI) {
+        this.clearAct()
+      } else {
         if (this.canRoll) {
           this.roll()
         } else if (this.canPlay) {
           this.move()
         }
+        this.setAct()
       }
     },
     roll() {
@@ -92,9 +92,9 @@ export default {
     move() {
       var pips = this.pips[this.player]
       var opponentPips = this.pips[otherPlayer(this.player)]
-      var move = ai(pips, opponentPips, this.moves)
+      var move = aiStrategy(pips, opponentPips, this.moves, this.strat)
       if (move) {
-        this.$store.dispatch('movePiece', move)
+        this.$store.dispatch('movePiece', {address: move})
       }
     }
   }
